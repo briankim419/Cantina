@@ -1,5 +1,6 @@
 require 'httparty'
 require 'pry'
+require 'pp'
 
 url = 'https://raw.githubusercontent.com/jdolan/quetoo/master/src/cgame/default/ui/settings/SystemViewController.json'
 response = HTTParty.get(url)
@@ -17,10 +18,16 @@ if input.include?("#")
   parsed_input = input.split("#")
   @selector = parsed_input[0]
   @id = parsed_input[1]
-elsif input.include?(" .")
-  parsed_input = input.split(" .")
-  @selector = parsed_input[0]
+  if parsed_input[0] == ""
+    @selector = "identifier"
+  end
+elsif input.include?(".")
+  parsed_input = input.split(".")
+  @selector = parsed_input[0].strip
   @id = parsed_input[1]
+  if parsed_input[0].strip == ""
+    @selector = "classNames"
+  end
 else
   @selector = input
 end
@@ -36,7 +43,9 @@ def search (obj, term)
             end
           else
             if @id != nil
-              search(data_set, @id)
+
+              term = @id
+              search(data_set, term)
               @id = nil
             else
               @all_responses << obj
@@ -47,7 +56,8 @@ def search (obj, term)
             search(data_set, term)
           else
             if @id != nil
-              search(data_set, @id)
+              term = @id
+              search(data_set, term)
               @id = nil
             else
               @all_responses << data_set
@@ -66,7 +76,8 @@ def search (obj, term)
             end
           else
             if @id != nil
-              search(data_set, @id)
+              term = @id
+              search(data_set, term)
               @id = nil
             else
               @all_responses << obj
@@ -78,7 +89,8 @@ def search (obj, term)
               search(data_set, term)
             else
               if @id != nil
-                search(data_set, @id)
+                term = @id
+                search(data_set, term)
                 @id = nil
               else
                 @all_responses << data_set
@@ -99,5 +111,5 @@ puts @all_responses.length
 puts "RESPONSE"
 puts "======="
 @all_responses.each do |response|
-  puts response
+  puts pp(response)
 end
